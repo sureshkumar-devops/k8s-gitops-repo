@@ -1,0 +1,21 @@
+name: CI CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  bump-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Bump image tag
+      run: |
+        sed -i 's/tag: 1.0.0/tag: ${{ github.sha }}/' overlays/development/patch-image.yaml
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git commit -am "chore: bump image"
+        git push

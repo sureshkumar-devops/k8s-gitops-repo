@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-staging
+  namespace: argocd
+annotations:
+  argocd-image-updater.argoproj.io/image-list: sample-app=lehardocker/k8s-gitops-img
+  argocd-image-updater.argoproj.io/sample-app.update-strategy: semver
+  argocd-image-updater.argoproj.io/sample-app.write-back-method: git
+  argocd-image-updater.argoproj.io/sample-app.git-branch: master
+  argocd-image-updater.argoproj.io/sample-app.allow-tags: regexp:^[0-9]+\.[0-9]+\.[0-9]+$
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sureshkumar-devops/k8s-gitops-repo
+    path: overlays/staging
+    targetRevision: master
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
